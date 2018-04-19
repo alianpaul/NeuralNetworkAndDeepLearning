@@ -1,0 +1,218 @@
+#+STARTUP: latexpreview
+
+* Perceptrons
+- The basic mathematical model
+
+  inputs: $x_{1}$, $x_{2}$, $x_{2}$ ..
+  weights of each input: $w_{1}$, $w_{2}$, $w_{3}$ ..
+  ouputs: 
+  \[
+  output =
+  \begin{cases}
+  0 & \quad \text{if} \sum_{j} w_{j}x_{j} \leq thresold \\
+  1 & \quad \text{if} \sum_{j} w_{j}x_{j} > thresold
+  \end{cases}
+  \]
+
+  Perceptrons' bias: $b = -thresold$, so we can rewrite the output of a
+  Perceptron as:
+  \[
+  output =
+  \begin{cases}
+  0 & \quad \text{if} w \cdot x + b\leq 0 \\
+  1 & \quad \text{if} w \cdot x + b > 0
+  \end{cases}
+  \]
+
+- Learning algorithm
+
+  Automatically tune the weights and biases of a network of artificial
+  neurons.
+* Sigmoid Neurons
+- How can we devise a learning network? 
+
+  网络中，如果weights与biases的微小改变也只会引起output的微小改变，则
+  我们可以通过一点一点改变weights与biases来调整output，使output越来越
+  接近正确结果。
+
+  但是由Perceptrons组成的网络无法实现上述learning algorithm，因为
+  weights与biases的微小改变很可能引起output的激变。
+
+- How to make the change of the output gradually? 
+  
+  *Sigmoid neuron*
+
+  Sigmoid function is just a smoothed out version of a step
+  function.(Perceptron的ouput即为step function)
+
+  \[ \sigma(z) = \frac{1}{1 + e^{-z}} \]
+  
+  The output of sigmoid neuron is $\sigma(w \cdot x + b)$
+
+  Sigmoid function的smoothness保证了weights与bias的微小改变也只会引起
+  output的微小改变。
+  
+  \[\Delta output \approx \sum_{j} \frac{\partial output}{\partial
+  w_{j}} \Delta w_{j} + \frac{\partial output}{\partial b} \Delta b \]
+
+- If it's the shape of of $\sigma$ which really matters, and not its
+  exact form. then why the particular form is used for $\sigma$ ?
+
+  首先我们将此smoothness函数定义为activation function $f$ :
+  $f(w\cdotx + b)$. 不同的activation function只会影响partial
+  derivative的具体大小，但是微分方程的线性性质并不会改变。使用sigmoid
+  function作为activation function是因为其求导方便(have lovely
+  properties when differentiated)。
+  
+* The Architecture of Neural Networks
+Input layer | Hidden layer | Output layer
+
+- Hidden layer
+
+ Learning Algorithm的设计难点是Hidden layer，we don't have rules of
+ thrumb, only have design heuristics to trade off the number of hidden
+ layers and the time required to train the network.
+
+- Feedforward neural networks
+
+ No feedback and loop. 
+
+- Recurrent neural networks 
+
+ Have feed back and loop. Got a cascade of neurons firing.
+
+* A Simple Network to Classify Handwritten Digits
+- 2 steps: segmentation and classification, which step should we solve
+  first?
+
+  Classification, 因为一个设计好的Classification算法可以用来评价一个
+  Segmentation算法的效果，Classification算法对自己的结果越confidential，
+  那么Segmentation方法越理想。所以我们优先解决Classification的问题。
+
+- Input Layer | Hidden Layer | Output Layer
+
+  Input Layer: 28 $\times$ 28 = 784 input neurons. Because each piece has 784 neurons.
+  
+  Hidden Layer: 1 Hidden Layer, 15 neurons.
+
+  Output Layer: 10 output neurons.
+
+* Learning with Gradient Descent
+- Training data set to learn from.
+
+  [[http://yann.lecun.com/exdb/mnist/][MNIST]] images of handwritten digits together with their correct
+  classifiction.  2 parts, training data and test data.
+
+- Math model
+
+  Each training input $x$ is a 784 dimensional vector.  Each entry
+  represents the gray value for a single pixel.  $y = y(x)$ is the
+  corresponding *desired output*, where $y$ is a 10 dimensional vector.
+
+  Target: Find the weights and biases of each neuron in the network so
+  that the output of the network approximates $y$ for all $x$ as close
+  as posible.
+
+- Cost function
+  
+  Quadratic cost function (MSE: mean squared error)
+
+  \[C(w,b) = \frac{1}{2n} \sum_{x} \| y(x) - a(x, w, b) \|^{2}\]
+  
+  $w$: the collection of all weights in the network.
+
+  $b$: the collection of all biases in the network.
+
+  $a(x, w, b)$: the output put of the learning network.
+
+  $\| \|$: the length of the vector
+
+- Why we use the cost function to find the weights and biases?
+
+  最直接的评价方法是，对于设置好的 $w$ ，$b$ ，统计所有输入 $x$ 其结果
+  正确的个数，越多则 $w$ ，$b$ 设置越好。但是这种评价方法又会出现类似
+  Perceptrons会出现的问题。The output is not smoothed, it's hard to
+  adjust $x$, $b$ according to the output error. We focus first on
+  minimizing the quadratic cost function, only after that will we
+  examine the classification accuracy.
+
+- Use gradient descent to solve the cost function minimization problem.
+
+  e.g. $C = C(v_{1}, v_{2})$, find $v_{1}$ and $v_{2}$ when $C$
+  achieves its minimum.  We start at a point and move a small amount
+  $\Delta v_{1}$ in $v_{1}$ direction and a small amount $\Delta
+  v_{2}$ in $v_{2}$ direction. The Calculus tells us that:
+
+  \[ \Delta C \approx \frac{\partial C}{\partial v_{1}} \Delta v_{1} + \frac{\partial C}{\partial v_{2}} \Delta v_{2} \]
+  
+  We want to go to the next position so that $\Delta C < 0$. we will
+  get to the minimum point follow this way.
+
+  \[\Delta C \approx \nabla C \cdot \Delta v \]
+
+  $\nabla C$: gradient of $C$ at point $(v_{1},v_{2})$. *Think of it as a single math object*.
+
+  $\Delta v$: the vector of changes in $v$ direction.
+
+  In this form, if we want $\Delta C$ to be negative, we just let
+  $\Delta v = - \eta\nabla C$ and $\Delta C \approx - \eta \| \nabla C
+  \|^{2}$.  $\eta$ is the positive parameter called *learning rate*.
+
+  By this property, $v'$ motion $v \to v' = v + \Delta v = v - \eta
+  \nabla C$.  So to find minimum of $C$, we just repeatly calculate
+  the gradient $\nabla C$ and then move into the opposite direction.
+
+- We need to choose a good learning rate $\eta$
+
+  If it's too big, we will never get a $\Delta C$ that less than 0.
+  If it's too small, the finding minimum process will converge very
+  slowly. $\eta$ is often varied during the process.
+
+- How can we apply gradient descent to learn in a neural netwok?
+  
+  \[C(w,b) = \frac{1}{2n} \sum_{x} \| y(x) - a(x, w, b) \|^{2}\]
+
+  We use gradient descent to find weights $w_{k}$ and biases $b_{l}$
+  which minimize the cost function. So for each weight $w_{k}$ and
+  bias $b_{l}$, we have:
+
+  \[w_{k} \to w_{k}' = w_{k} - \eta \frac{\partial C}{\partial w_{k}} \]
+  \[b_{l} \to b_{l}' = b_{l}' - \eta \frac{\partial C}{\partial b_{l}}\]
+
+- One problem when we apply gradient descent
+
+  Cost function $C(w, b)$ can be rewrite as $C(w, b) = \frac{1}{n}
+  \sum_{x} C_{x}$, where $C_{x} = \frac{\| y(x) - a\|^{2}}{2}$.  Each
+  $C_{x}$ is a function of $w$ and $b$. In practice:  
+
+  \[ \frac{\partial C}{\partial w_{k}} = \frac{1}{n} \sum_{x} \frac{\partial C_{x}}{\partial w_{k}}\]
+
+  But the number of training inputs is very large, this can take a
+  long time.
+
+  We use *stochastic gradient descent* to solve this problem.  The
+  idea is not to calculate all the $\frac{\partial C_x}{\partial w_k}$
+  to get $\frac{\partial C}{\partial w_k}$, but to randomly choose a
+  small sample of training input.  It's a good way to estimate $\frac{\partial C}{\partial w_k}$.
+
+  *mini-batch*: randomly choosen inputs $x_{1}, x_{2} \dots x_{m}$. 
+
+  \[\nabla C \approx \frac{1}{m} \sum_{j = 1}^{m} \nabla C_{x_{j}}\]
+  
+  We train the network with the randomly picked out mini-batch, then
+  we chose another randomly picked mini-batch. We go through this
+  process until we've exhausted the training inputs, which is said to
+  complete an *epoch* of training.  We start a new one when we
+  complete an epoch of training.
+
+  只要我们能够移动到新到点使得 $\Delta C$ 是减小点即可，计算偏导数时是否精确并不
+  影响这个过程，所以我们可以用stochastic gradient descent寻找最小位置.
+
+- Sometimes we can omit the scaling factor $\frac{1}{n}$ or
+  $\frac{1}{m}$ in the cost function.
+
+  In some cases we don't know the number of inputs in advance.  This
+  makes little difference since it's equivalent to rescaling the
+  learning rate $\eta$.
+
+* Implementing Our Network to Classify Digits
