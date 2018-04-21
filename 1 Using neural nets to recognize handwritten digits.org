@@ -215,4 +215,60 @@ Input layer | Hidden layer | Output layer
   makes little difference since it's equivalent to rescaling the
   learning rate $\eta$.
 
+- Online (Incremental) Learning: learn from just 1 input at a time.
+  
+  Advantage: We can move each step very fast 
+
+  Disadvantage: But we may move to a bad position because
+  $\frac{\partial C_x}{\partial w_k}$ may be very different from $\frac{\partial C}{\partial w_k}$.
+
 * Implementing Our Network to Classify Digits
+ Split the original training images: 60,000 = 50,000 + 10,000, 10,000
+ is the validation set.  So now the training images contain 50,000
+ piece of data.
+
+ *Hyper parameters* of the neural network. e.g. learning rate $\eta$,
+ mini-batch size.  Parameters are not learnt by our learning
+ algorithm.  We can improve these parameters by the result.
+
+ Numpy: for fast linear algebra.
+
+- How to store the weights and biaes of the network?
+  
+  1st layer | 2nd layer | 3rd layer
+       weights[0]  weights[1]
+
+  e.g. weights of the 3rd layer:                $w$
+       biases of the 3rd layer:                 $b$
+       activations of the second layer(vector): $a$
+       activations of the third layer(vector):  $a'$
+
+  n\[ a' = \sigma (w \cdot a + b)\], we apply the sigmoid function to
+  every entry of the vector.
+  
+  In order to write the activation function in the above way.
+  $w_{ij}$ means the weight between neuron i in the 3rd layer and
+  neuron j in the 2nd layer.  row $i$ of $w$ is the weights of neuron $i$
+  in 3rd layer.
+
+  For each mini-batch, we apply a single step of gradient descent.
+
+  Debuging a neural network is not trivial, we need to develop
+  heuristics for choosing good hyper parameters and good architecture
+  of work.
+
+  Compare with machine learning algorithm: SVM (Support Vector Machine)
+
+  
+
+  
+* Toward Deep Learning
+- Can we understand the principles by which our network is classifying
+  handwritten digits?
+
+  Deep neural networks: Network with many-layer structure, building up
+  a hierarchy of complex and abstract concepts.
+
+  
+
+  

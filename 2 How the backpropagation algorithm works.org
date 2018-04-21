@@ -1,0 +1,11 @@
+#+STARTUP: latexpreview
+
+* A fast matrix approach to compute the output from a neural network
+* The 2 assumptions we need about the cost function
+* The hadamard product
+* The 4 fundamental equations behind backpropagation
+* Proof of the 4 fundamental equations
+* The backpropagation algorithm
+* The code for backpropagation
+* In what sense is backpropagation a fast algorithm
+* Backpropagation the big picture
